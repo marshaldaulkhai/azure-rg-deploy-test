@@ -1,4 +1,4 @@
-name: Terraform Deploy
+name: Terraform Apply
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   terraform:
-    name: Deploy Resource Group
+    name: Terraform Workflow
     runs-on: ubuntu-latest
 
     steps:
@@ -17,12 +17,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.7
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          terraform_version: 1.4.6
 
       - name: Terraform Init
         run: terraform init
@@ -32,3 +27,9 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
