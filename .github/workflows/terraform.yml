@@ -1,35 +1,56 @@
-name: Terraform Apply
+# .github/workflows/terraform.yml
+
+name: Terraform Azure RG Deployment
 
 on:
   push:
     branches:
-      - main
+      - main # This workflow runs when changes are pushed to the 'main' branch
 
 jobs:
   terraform:
-    name: Terraform Workflow
-    runs-on: ubuntu-latest
+    name: 'Terraform'
+    runs-on: ubuntu-latest # Uses the latest Ubuntu runner
+
+    # Use the Bash shell
+    defaults:
+      run:
+        shell: bash
 
     steps:
+      # Checkout the repository code
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # Azure Login using the Service Principal
+      # This step explicitly logs into Azure CLI,
+      # which Terraform can then use for authentication.
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.ARM_TENANT_ID }}"
+            }
+      # Setup Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.4.6
+          terraform_version: 1.5.0 # Specify a compatible Terraform version
 
+      # Initialize Terraform (downloads providers, sets up backend)
       - name: Terraform Init
         run: terraform init
 
+      # Generate an execution plan (shows what changes will be made)
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -no-color
 
+      # Apply the Terraform changes (creates the resource group)
+      # Note: For production, you might want a manual approval step here.
+      # For this tutorial, we're auto-applying for simplicity.
       - name: Terraform Apply
         run: terraform apply -auto-approve
-
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
