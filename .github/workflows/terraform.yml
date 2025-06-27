@@ -1,56 +1,50 @@
-# .github/workflows/terraform.yml
-
-name: Terraform Azure RG Deployment
+name: Deploy Azure Resource Group
 
 on:
   push:
-    branches:
-      - main # This workflow runs when changes are pushed to the 'main' branch
+    paths:
+      - 'modules/resource_group/**'
+      - '*.tf'
+      - '.github/workflows/main.yml'
+      - 'terraform.tfvars'
 
 jobs:
   terraform:
-    name: 'Terraform'
-    runs-on: ubuntu-latest # Uses the latest Ubuntu runner
-
-    # Use the Bash shell
+    name: Terraform Plan & Apply
+    runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
+        working-directory: .
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
     steps:
-      # Checkout the repository code
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Azure Login using the Service Principal
-      # This step explicitly logs into Azure CLI,
-      # which Terraform can then use for authentication.
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.ARM_TENANT_ID }}"
-            }
-      # Setup Terraform CLI
+          creds: ${{ toJson(secrets.AZURE_CREDENTIALS) }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.0 # Specify a compatible Terraform version
+          terraform_version: '1.5.7'
 
-      # Initialize Terraform (downloads providers, sets up backend)
       - name: Terraform Init
         run: terraform init
 
-      # Generate an execution plan (shows what changes will be made)
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: terraform plan -var-file="terraform.tfvars"
 
-      # Apply the Terraform changes (creates the resource group)
-      # Note: For production, you might want a manual approval step here.
-      # For this tutorial, we're auto-applying for simplicity.
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID:     ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_TENANT_ID:     ${{ secrets.ARM_TENANT_ID }}
