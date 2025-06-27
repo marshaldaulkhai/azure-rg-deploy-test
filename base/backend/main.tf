@@ -1,9 +1,18 @@
-module "resource_group" {
-  source              = "../../modules/resource_group"
-  name                = var.resource_group_name
-  location            = var.location
-  #tags                = var.tags
+provider "azurerm" {
+  features {}
 }
+
+module "resource_group" {
+  source   = "../../modules/resource_group"
+  name     = var.resource_group_name
+  location = var.location
+}
+
+# Optional: Uncomment if you want storage module too
+# module "storage_account" {
+#   ...
+# }
+
 /*
 module "storage_account" {
   source                  = "../../modules/storage_account"
