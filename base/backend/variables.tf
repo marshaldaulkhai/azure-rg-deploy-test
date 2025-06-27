@@ -1,17 +1,39 @@
-module "resource_group" {
-  source              = "../../modules/resource_group"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
+variable "resource_group_name" {
+  description = "Name of the resource group"
+  type        = string
 }
 
-module "storage_account" {
-  source                  = "../../modules/storage_account"
-  storage_account_name    = var.storage_account_name
-  container_name          = var.container_name
-  resource_group_name     = module.resource_group.name
-  location                = var.location
-  account_tier            = var.account_tier
-  account_replication_type = var.account_replication_type
-  tags                    = var.tags
+variable "location" {
+  description = "Azure region"
+  type        = string
+  default     = "eastus"
+}
+
+variable "storage_account_name" {
+  description = "Globally unique name for the storage account"
+  type        = string
+}
+
+variable "container_name" {
+  description = "Name of the blob container"
+  type        = string
+  default     = "tfstate"
+}
+
+variable "account_tier" {
+  description = "Storage account tier"
+  type        = string
+  default     = "Standard"
+}
+
+variable "account_replication_type" {
+  description = "Replication type for the storage account"
+  type        = string
+  default     = "LRS"
+}
+
+variable "tags" {
+  description = "Tags to apply to resources"
+  type        = map(string)
+  default     = {}
 }
