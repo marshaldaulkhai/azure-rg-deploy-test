@@ -8,7 +8,7 @@ variable "location" {
   type        = string
   default     = "eastus"
 }
-
+/*
 variable "storage_account_name" {
   description = "Globally unique name for the storage account"
   type        = string
