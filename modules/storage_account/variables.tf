@@ -29,9 +29,10 @@ variable "account_replication_type" {
   type        = string
   default     = "LRS"
 }
-
+/*
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
   default     = {}
 }
+*/
