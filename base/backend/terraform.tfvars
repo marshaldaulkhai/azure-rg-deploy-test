@@ -1,4 +1,4 @@
-resource_group_name       = "tfstate-rg"
+resource_group_name       = "tfstate-rg-01"
 location                  = "eastus"
 /*storage_account_name      = "marshalstatestg123"  # Must be globally unique
 container_name            = "tfstate"
