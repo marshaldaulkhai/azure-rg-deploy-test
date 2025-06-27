@@ -7,7 +7,7 @@ resource "azurerm_storage_account" "this" {
 
   #allow_blob_public_access = false
 
-  tags = var.tags
+  #tags = var.tags
 }
 
 resource "azurerm_storage_container" "this" {
