@@ -8,7 +8,7 @@ variable "location" {
   type        = string
   default     = "eastus"
 }
-/*
+
 variable "storage_account_name" {
   description = "Globally unique name for the storage account"
   type        = string
@@ -31,7 +31,7 @@ variable "account_replication_type" {
   type        = string
   default     = "LRS"
 }
-
+/*
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
