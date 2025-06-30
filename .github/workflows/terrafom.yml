@@ -1,27 +1,23 @@
-name: Deploy Azure Resource Group
+name: STerraform Plan and Apply
+
 
 on:
   push:
+    branches:
+      - main
     paths:
-      - 'modules/resource_group/**'
-      - '*.tf'
-      - '.github/workflows/main.yml'
-      - 'terraform.tfvars'
+      - 'base/backend/**'
 
 jobs:
   terraform:
-    name: Terraform Plan & Apply
+    name: Terraform RG Demo
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .
-
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+        working-directory:  ./envs/dev
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Azure Login
@@ -37,10 +33,16 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '1.5.7'
+          terraform_version: 1.5.7
 
       - name: Terraform Init
         run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate
 
       - name: Terraform Plan
         run: terraform plan -var-file="terraform.tfvars"
@@ -48,8 +50,3 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
-        env:
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_CLIENT_ID:     ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_TENANT_ID:     ${{ secrets.ARM_TENANT_ID }}

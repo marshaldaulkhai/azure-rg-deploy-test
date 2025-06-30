@@ -1,6 +1,4 @@
-# modules/resource_group/main.tf
-
-resource "azurerm_resource_group" "this" {
-  name     = var.name
-  location = var.location
+resource "azurerm_resource_group" "main" {
+  name      =  var.name
+  location  =  var.location
 }
