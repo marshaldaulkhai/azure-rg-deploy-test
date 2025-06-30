@@ -4,3 +4,4 @@ module "resource_group" {
   location = var.location
 }
 
+
