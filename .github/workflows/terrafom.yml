@@ -1,12 +1,10 @@
-name: STerraform Plan and Apply
-
-
+name: Terraform Plan and Apply
 on:
   push:
     branches:
       - main
     paths:
-      - 'base/backend/**'
+      - 'env/dev/**'
 
 jobs:
   terraform:
