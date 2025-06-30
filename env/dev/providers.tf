@@ -7,7 +7,6 @@ terraform {
   }
   required_version = ">= 1.0.0" 
 }
-
 # Configure the AzureRM Provider
 provider "azurerm" {
   features {} 
