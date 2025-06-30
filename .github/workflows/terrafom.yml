@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory:  ./envs/dev
+        working-directory:  ./env/dev
 
     steps:
       - name: Checkout Repository
