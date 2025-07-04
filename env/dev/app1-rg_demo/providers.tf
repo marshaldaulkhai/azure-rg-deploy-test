@@ -10,9 +10,21 @@ terraform {
   required_version = ">= 1.0.0"
 }
 
-# Configure the single AzureRM Provider.
-# The region for resources will be specified directly on the resources themselves.
+# Configure the Default AzureRM Provider (using your main Service Principal credentials)
 provider "azurerm" {
   features {}
-  subscription_id = var.subscription_id # Still need to pass your subscription ID here
+  subscription_id = var.subscription_id
+  client_id       = var.main_client_id
+  client_secret   = var.main_client_secret
+  tenant_id       = var.main_tenant_id
+}
+
+# Configure an Aliased AzureRM Provider (for audit/restricted access, using a different Service Principal)
+provider "azurerm" {
+  alias           = "audit_access" # This is our alias for the audit SP
+  features {}
+  subscription_id = var.subscription_id # Still targeting the same subscription
+  client_id       = var.audit_client_id
+  client_secret   = var.audit_client_secret
+  tenant_id       = var.audit_tenant_id
 }

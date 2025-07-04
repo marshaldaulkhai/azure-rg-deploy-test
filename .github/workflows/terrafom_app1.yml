@@ -12,15 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory:  ./env/dev/app1-rg_demo
+        working-directory: ./env/dev/app1-rg_demo
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # IMPORTANT: The azure/login action primarily logs into Azure for the default context.
+      # For this setup, we are explicitly passing all Service Principal credentials
+      # via Terraform -var flags to ensure both default and aliased providers are configured.
+      # You can keep this azure/login step as it provides a good initial login context.
       - name: Azure Login
         uses: azure/login@v1
         with:
+          # Use your main SP credentials for the initial Azure login
           creds: |
             {
               "clientId": "${{ secrets.ARM_CLIENT_ID }}",
@@ -28,6 +33,7 @@ jobs:
               "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.ARM_TENANT_ID }}"
             }
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -40,8 +46,26 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -var-file="terraform.tfvars"
+        # Pass all Service Principal credentials as -var flags
+        run: |
+          terraform plan \
+            -var-file="terraform.tfvars" \
+            -var="main_client_id=${{ secrets.ARM_CLIENT_ID }}" \
+            -var="main_client_secret=${{ secrets.ARM_CLIENT_SECRET }}" \
+            -var="main_tenant_id=${{ secrets.ARM_TENANT_ID }}" \
+            -var="audit_client_id=${{ secrets.ARM_AUDIT_CLIENT_ID }}" \
+            -var="audit_client_secret=${{ secrets.ARM_AUDIT_CLIENT_SECRET }}" \
+            -var="audit_tenant_id=${{ secrets.ARM_AUDIT_TENANT_ID }}"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+        # Pass all Service Principal credentials as -var flags
+        run: |
+          terraform apply -auto-approve \
+            -var-file="terraform.tfvars" \
+            -var="main_client_id=${{ secrets.ARM_CLIENT_ID }}" \
+            -var="main_client_secret=${{ secrets.ARM_CLIENT_SECRET }}" \
+            -var="main_tenant_id=${{ secrets.ARM_TENANT_ID }}" \
+            -var="audit_client_id=${{ secrets.ARM_AUDIT_CLIENT_ID }}" \
+            -var="audit_client_secret=${{ secrets.ARM_AUDIT_CLIENT_SECRET }}" \
+            -var="audit_tenant_id=${{ secrets.ARM_AUDIT_TENANT_ID }}"
