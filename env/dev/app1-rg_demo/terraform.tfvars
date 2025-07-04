@@ -1,2 +1,5 @@
-resource_group_name  = "demo-rg-02"
-location             = "westus2"
+# env/dev/app1-rg_demo/terraform.tfvars
+
+resource_group_name_eastus = "my-rg-east-dev"
+resource_group_name_westus = "my-rg-west-dev"
+subscription_id            = "6d41859f-600b-4bdf-9b5d-084a0582cb54" # <--- REPLACE WITH YOUR ACTUAL SUBSCRIPTION ID
