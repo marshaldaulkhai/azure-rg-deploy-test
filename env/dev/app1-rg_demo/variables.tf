@@ -13,8 +13,5 @@ variable "resource_group_name_westus" {
 variable "subscription_id" {
   description = "The Azure Subscription ID to deploy resources into."
   type        = string
-  sensitive   = true # Mark as sensitive for security best practice
+  sensitive   = true
 }
-
-# You can remove the old 'location' variable as we will define regions directly in the provider blocks.
-# If you plan to use 'location' for other resources or a more generic setup, you might consider changing it to a map or list.

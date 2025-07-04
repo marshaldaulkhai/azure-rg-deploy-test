@@ -10,17 +10,9 @@ terraform {
   required_version = ">= 1.0.0"
 }
 
-# Configure the default AzureRM Provider for resources in East US
+# Configure the single AzureRM Provider.
+# The region for resources will be specified directly on the resources themselves.
 provider "azurerm" {
   features {}
-  subscription_id = var.subscription_id
-  region          = "East US"           # CORRECTED: Use 'region' here
-}
-
-# Configure an aliased AzureRM Provider for resources in West US
-provider "azurerm" {
-  alias           = "westus"
-  features {}
-  subscription_id = var.subscription_id
-  region          = "West US"           # CORRECTED: Use 'region' here
+  subscription_id = var.subscription_id # Still need to pass your subscription ID here
 }
