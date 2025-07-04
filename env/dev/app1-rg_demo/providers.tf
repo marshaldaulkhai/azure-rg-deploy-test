@@ -13,14 +13,14 @@ terraform {
 # Configure the default AzureRM Provider for resources in East US
 provider "azurerm" {
   features {}
-  subscription_id = var.subscription_id # Get subscription ID from variable
-  location        = "East US"           # Set the default region for this provider instance
+  subscription_id = var.subscription_id
+  region          = "East US"           # CORRECTED: Use 'region' here
 }
 
 # Configure an aliased AzureRM Provider for resources in West US
 provider "azurerm" {
-  alias           = "westus"            # Give this provider configuration an alias
+  alias           = "westus"
   features {}
-  subscription_id = var.subscription_id # Use the same subscription ID
-  location        = "West US"           # Set the specific region for the aliased provider
+  subscription_id = var.subscription_id
+  region          = "West US"           # CORRECTED: Use 'region' here
 }
