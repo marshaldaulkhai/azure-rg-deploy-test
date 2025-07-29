@@ -27,14 +27,13 @@ resource "azurerm_service_plan" "app_service_plan" {
 }
 
 resource "azurerm_windows_web_app" "example" {
-  name                = "example-webapp-12345"   # must be globally unique
+  name                = "example-webapp-12345"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
 
   site_config {
-    scm_type = "LocalGit"   # Deployment option
-
+    # Removed scm_type here, as it is no longer configurable
     application_stack {
       current_stack = "dotnet"
       dotnet_version = "v4.0"
@@ -44,4 +43,10 @@ resource "azurerm_windows_web_app" "example" {
   app_settings = {
     "SOME_KEY" = "some-value"
   }
+}
+resource "azurerm_app_service_source_control" "example" {
+  app_id     = azurerm_windows_web_app.example.id
+  repo_url   = "https://github.com/your/repo.git"
+  branch     = "main"
+  scm_type   = "LocalGit"  # or GitHub, Bitbucket, etc.
 }
