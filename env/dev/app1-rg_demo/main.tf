@@ -14,7 +14,7 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "rg" {
   name     = "example-app-rg"
-  location = "East US"
+  location = var.location
 }
 
 resource "azurerm_service_plan" "app_service_plan" {
@@ -27,8 +27,8 @@ resource "azurerm_service_plan" "app_service_plan" {
 }
 
 resource "azurerm_windows_web_app" "example" {
-  name                = "example-webapp-12345"
-  location            = azurerm_resource_group.rg.location
+  name                = var.web_app_name
+  location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
 
