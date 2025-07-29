@@ -26,15 +26,6 @@ resource "azurerm_service_plan" "app_service_plan" {
   os_type             = "Windows" # Or "Linux"
 }
 
-resource "azurerm_service_plan" "app_service_plan" {
-  name                = "example-appservice-plan"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  sku_name            = "S1"
-  os_type             = "Windows" # Or "Linux"
-}
-
 
   app_settings = {
     "SOME_KEY" = "some-value"
