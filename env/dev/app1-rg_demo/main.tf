@@ -30,12 +30,13 @@ resource "azurerm_app_service" "app_service" {
   name                = "example-webapp-12345"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  service_plan_id     = azurerm_service_plan.app_service_plan.id
+  
+  app_service_plan_id = azurerm_service_plan.app_service_plan.id  # Correct argument name here
 
   site_config {
-    dotnet_framework_version = "v4.0"     # For .NET apps; adjust or remove as needed
-    scm_type                 = "LocalGit" # Deployment method
-    # For Linux apps, use e.g.:
+    dotnet_framework_version = "v4.0"
+    scm_type                 = "LocalGit"
+    # For Linux apps:
     # linux_fx_version = "PYTHON|3.8"
   }
 
