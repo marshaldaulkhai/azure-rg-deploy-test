@@ -29,8 +29,7 @@ resource "azurerm_app_service" "angular_webapp" {
   location            = var.location
   resource_group_name = var.create_resource_group ? azurerm_resource_group.webapp_rg[0].name : var.resource_group_name
   app_service_plan_id = var.create_app_service_plan ? azurerm_service_plan.webapp_plan[0].id : var.existing_app_service_plan_id
-  kind                = var.app_service_kind
-
+  
   # Site configuration for the App Service
   site_config {
     # Merge default site_config settings with any provided by the caller
