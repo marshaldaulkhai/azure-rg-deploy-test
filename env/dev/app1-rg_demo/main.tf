@@ -26,21 +26,19 @@ resource "azurerm_service_plan" "app_service_plan" {
   os_type  = "Windows"      # Change to "Linux" if needed
 }
 
-resource "azurerm_app_service" "app_service" {
+resource "azurerm_windows_web_app" "example" {
   name                = "example-webapp-12345"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  app_service_plan_id = azurerm_service_plan.app_service_plan.id
   
-  app_service_plan_id = azurerm_service_plan.app_service_plan.id  # Correct argument name here okay
-
   site_config {
     dotnet_framework_version = "v4.0"
     scm_type                 = "LocalGit"
-    # For Linux apps:
-    # linux_fx_version = "PYTHON|3.8"
   }
-
+  
   app_settings = {
     "SOME_KEY" = "some-value"
   }
 }
+
