@@ -22,18 +22,17 @@ resource "azurerm_service_plan" "app_service_plan" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  sku_name = "S1"          # Standard pricing tier
-  os_type  = "Windows"     # For Windows Web App; use "Linux" for Linux Web App
+  sku_name = "S1"
+  os_type  = "Windows"
 }
 
 resource "azurerm_windows_web_app" "example" {
-  name                = "example-webapp-12345"
+  name                = "example-webapp-12345"   # must be unique globally
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
 
   site_config {
-    # Removed scm_type here, as it is no longer configurable
     application_stack {
       current_stack = "dotnet"
       dotnet_version = "v4.0"
@@ -44,9 +43,11 @@ resource "azurerm_windows_web_app" "example" {
     "SOME_KEY" = "some-value"
   }
 }
+
 resource "azurerm_app_service_source_control" "example" {
-  app_id     = azurerm_windows_web_app.example.id
-  repo_url   = "https://github.com/your/repo.git"
-  branch     = "main"
-  scm_type   = "LocalGit"  # or GitHub, Bitbucket, etc.
+  app_service_id         = azurerm_windows_web_app.example.id
+  repo_url               = "https://github.com/your/repo.git"
+  branch                 = "main"
+  is_manual_integration  = true
+  # scm_type argument REMOVED because it is not configurable
 }
