@@ -21,28 +21,27 @@ resource "azurerm_service_plan" "app_service_plan" {
   name                = "example-appservice-plan"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  
-  sku_name = "S1"           # Standard S1 plan
-  os_type  = "Windows"      # Change to "Linux" if needed
+
+  sku_name = "S1"          # Standard pricing tier
+  os_type  = "Windows"     # For Windows Web App; use "Linux" for Linux Web App
 }
 
 resource "azurerm_windows_web_app" "example" {
-  name                = "example-webapp-12345"
+  name                = "example-webapp-12345"   # must be globally unique
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  service_plan_id     = azurerm_service_plan.app_service_plan.id  # Correct argument
+  service_plan_id     = azurerm_service_plan.app_service_plan.id
 
   site_config {
-    scm_type = "LocalGit"  # deployment method, optional
-  }
+    scm_type = "LocalGit"   # Deployment option
 
-  application_stack {
-    current_stack = "dotnet"    # for .NET framework
-    dotnet_version = "v4.0"     # specify .NET version
+    application_stack {
+      current_stack = "dotnet"
+      dotnet_version = "v4.0"
+    }
   }
 
   app_settings = {
     "SOME_KEY" = "some-value"
   }
 }
-
