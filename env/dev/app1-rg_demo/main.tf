@@ -21,11 +21,23 @@ resource "azurerm_service_plan" "app_service_plan" {
   name                = "example-appservice-plan"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-
-  sku_name            = "S1"
-  os_type             = "Windows" # Or "Linux"
+  
+  sku_name = "S1"           # Standard S1 plan
+  os_type  = "Windows"      # Change to "Linux" if needed
 }
 
+resource "azurerm_app_service" "app_service" {
+  name                = "example-webapp-12345"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  service_plan_id     = azurerm_service_plan.app_service_plan.id
+
+  site_config {
+    dotnet_framework_version = "v4.0"     # For .NET apps; adjust or remove as needed
+    scm_type                 = "LocalGit" # Deployment method
+    # For Linux apps, use e.g.:
+    # linux_fx_version = "PYTHON|3.8"
+  }
 
   app_settings = {
     "SOME_KEY" = "some-value"
