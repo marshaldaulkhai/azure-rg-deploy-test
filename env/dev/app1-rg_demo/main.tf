@@ -27,7 +27,7 @@ resource "azurerm_service_plan" "app_service_plan" {
 }
 
 resource "azurerm_windows_web_app" "example" {
-  name                = "example-webapp-12345"   # must be unique globally
+  name                = "example-webapp-12345"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
@@ -45,9 +45,8 @@ resource "azurerm_windows_web_app" "example" {
 }
 
 resource "azurerm_app_service_source_control" "example" {
-  app_service_id         = azurerm_windows_web_app.example.id
-  repo_url               = "https://github.com/your/repo.git"
-  branch                 = "main"
-  is_manual_integration  = true
-  # scm_type argument REMOVED because it is not configurable
+  app_id               = azurerm_windows_web_app.example.id
+  repo_url             = "https://github.com/your/repo.git"
+  branch               = "main"
+  use_manual_integration = true
 }
