@@ -52,7 +52,4 @@ jobs:
             -var-file="terraform.tfvars" \
             -var="main_client_id=${{ secrets.ARM_CLIENT_ID }}" \
             -var="main_client_secret=${{ secrets.ARM_CLIENT_SECRET }}" \
-            -var="main_tenant_id=${{ secrets.ARM_TENANT_ID }}" \
-            -var="audit_client_id=${{ secrets.ARM_AUDIT_CLIENT_ID }}" \
-            -var="audit_client_secret=${{ secrets.ARM_AUDIT_CLIENT_SECRET }}" \
-            -var="audit_tenant_id=${{ secrets.ARM_AUDIT_TENANT_ID }}"
+            -var="main_tenant_id=${{ secrets.ARM_TENANT_ID }}" 
