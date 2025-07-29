@@ -13,17 +13,14 @@ resource "azurerm_resource_group" "webapp_rg" {
 }
 
 # Conditionally create an Azure App Service Plan
-resource "azurerm_app_service_plan" "webapp_plan" {
+resource "azurerm_service_plan" "webapp_plan" { # Changed resource type here
   count               = var.create_app_service_plan ? 1 : 0
   name                = local.app_service_plan_final_name
   location            = var.location
   resource_group_name = var.create_resource_group ? azurerm_resource_group.webapp_rg[0].name : var.resource_group_name
-  kind                = var.app_service_plan_os_type
-  sku {
-    tier = var.app_service_plan_sku_tier
-    size = var.app_service_plan_sku_size
-  }
-  tags = local.common_tags
+  os_type             = var.app_service_plan_os_type # Changed 'kind' to 'os_type'
+  sku_name            = "${var.app_service_plan_sku_tier}_${var.app_service_plan_sku_size}" # Changed to sku_name format
+  tags                = local.common_tags
 }
 
 # Azure App Service for the Angular Web App
