@@ -50,9 +50,8 @@ resource "azurerm_windows_web_app" "windows_webapp" {
 
   site_config {
     application_stack {
-      # Customize stack accordingly
       current_stack = "dotnet"
-      dotnet_version = var.web_app_runtime_stack
+      dotnet_version = var.windows_web_app_dotnet_version
     }
   }
 
