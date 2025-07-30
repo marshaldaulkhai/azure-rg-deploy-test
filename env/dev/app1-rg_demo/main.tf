@@ -4,21 +4,18 @@ resource "azurerm_resource_group" "rg" {
   tags     = var.tags
 }
  
-resource "azurerm_app_service_plan" "app_service_plan" {
+resource "azurerm_service_plan" "app_service_plan" {
   name                = var.app_service_plan_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  kind     = var.app_service_plan_os_type == "Linux" ? "Linux" : "Windows"
-  reserved = var.app_service_plan_os_type == "Linux" ? true : false
-
-  sku {
-    tier = var.app_service_plan_sku_tier   # e.g., "Standard"
-    size = var.app_service_plan_sku_size   # e.g., "S1"
-  }
+  os_type  = var.app_service_plan_os_type  # "Linux" or "Windows"
+  sku_name = var.app_service_plan_sku_name  # e.g., "S1", "B1", "P1v2"
 
   tags = var.tags
 }
+
+
 
 
 # Web App for Linux or Windows, conditional resource inside
