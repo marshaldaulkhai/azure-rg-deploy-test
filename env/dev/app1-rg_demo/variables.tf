@@ -63,7 +63,7 @@ variable "repository_branch" {
 variable "enable_private_endpoint" {
   description = "Create private endpoint for the Web App"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "private_endpoint_subnet_id" {
