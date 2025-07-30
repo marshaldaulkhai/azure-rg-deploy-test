@@ -25,7 +25,7 @@ resource "azurerm_linux_web_app" "linux_webapp" {
   service_plan_id     = azurerm_service_plan.app_service_plan.id
 
   site_config {
-    linux_fx_version = var.web_app_runtime_stack
+    #linux_fx_version = var.web_app_runtime_stack
   }
 
   app_settings = var.app_settings
