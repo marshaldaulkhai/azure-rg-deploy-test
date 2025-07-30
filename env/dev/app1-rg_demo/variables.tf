@@ -94,3 +94,8 @@ variable "app_service_plan_sku_size" {
   type        = string
   default     = "S1"        # Example default; change as needed
 }
+variable "app_service_plan_sku_name" {
+  description = "SKU name for App Service Plan"
+  type        = string
+  default     = "S1"
+}
