@@ -92,3 +92,20 @@ variable "log_analytics_workspace_id" {
   type        = string
   default     = ""
 }
+variable "main_client_id" {
+  description = "The client ID for the main Azure Service Principal"
+  type        = string
+  default     =  "3e55028d-9cce-462e-bd5b-85d37adf811b"
+}
+
+variable "main_client_secret" {
+  description = "The client secret for the main Azure Service Principal"
+  type        = string
+  default     = "e3Z8Q~WDx5h2R14SOiPp~Sxn4TdaANzOTlqe3aA-"
+}
+
+variable "main_tenant_id" {
+  description = "The tenant ID for the Azure Active Directory tenant"
+  type        = string
+  default     = "985fb370-1790-4d59-adea-4bfd1e00486d"
+}
