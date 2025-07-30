@@ -1,45 +1,51 @@
 variable "resource_group_name" {
   description = "The name of the resource group"
   type        = string
+  default     = "rg-angular-webapp-demo"
 }
 
 variable "location" {
   description = "The Azure location/region"
   type        = string
+  default     = "West Europe"
 }
 
 variable "web_app_name" {
   description = "The name for the web app"
   type        = string
+  default     = "angular-webapp-demo-12345"
 }
 
 variable "app_service_plan_name" {
   description = "The name for the App Service Plan"
   type        = string
+  default     = "asp-angular-demo"
 }
 
 variable "app_service_plan_os_type" {
   description = "The OS type of the App Service Plan (Linux or Windows)"
   type        = string
-  default     = "Linux" # Change to "Windows" if needed
+  default     = "Linux"
 }
 
 variable "app_service_plan_sku_name" {
   description = "SKU name for the App Service Plan (e.g. S1, B1, P1v2)"
   type        = string
-  default     = "S1"
+  default     = "B1"   # Basic tier is often suitable for Angular apps
 }
 
 variable "web_app_runtime_stack" {
   description = "Specifies the runtime stack for the web app (LinuxFxVersion for Linux, or dotnet_version for Windows)"
   type        = string
-  default     = "NODE|18-lts"  # Default Linux Node.js 18 LTS
+  default     = "NODE|18-lts"  # Node.js 18 LTS runtime for Angular apps
 }
 
 variable "app_settings" {
   description = "App Settings (environment variables) for the web app"
   type        = map(string)
-  default     = {}
+  default     = {
+    "WEBSITE_NODE_DEFAULT_VERSION" = "18"
+  }
 }
 
 variable "repository_url" {
@@ -69,7 +75,10 @@ variable "private_endpoint_subnet_id" {
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
-  default     = {}
+  default     = {
+    "Environment" = "Dev"
+    "Project"     = "AngularApp"
+  }
 }
 
 variable "enable_monitoring" {
