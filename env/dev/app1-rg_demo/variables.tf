@@ -34,12 +34,6 @@ variable "app_service_plan_sku_name" {
   default     = "B1"   # Basic tier is often suitable for Angular apps
 }
 
-variable "web_app_runtime_stack" {
-  description = "Specifies the runtime stack for the web app (LinuxFxVersion for Linux, or dotnet_version for Windows)"
-  type        = string
-  default     = "NODE|18-lts"  # Node.js 18 LTS runtime for Angular apps
-}
-
 variable "app_settings" {
   description = "App Settings (environment variables) for the web app"
   type        = map(string)
@@ -92,6 +86,18 @@ variable "log_analytics_workspace_id" {
   type        = string
   default     = ""
 }
+variable "linux_web_app_runtime_stack" {
+  description = "The runtime stack for Linux web app (LinuxFxVersion)"
+  type        = string
+  default     = "NODE|18-lts"
+}
+
+variable "windows_web_app_dotnet_version" {
+  description = "The dotnet version for Windows web app"
+  type        = string
+  default     = "v8.0"  # Acceptable values: v2.0 to v8.0
+}
+
 variable "main_client_id" {
   description = "The client ID for the main Azure Service Principal"
   type        = string
