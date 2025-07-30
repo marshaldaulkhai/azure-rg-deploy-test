@@ -71,9 +71,11 @@ resource "azurerm_windows_web_app" "windows_webapp" {
 resource "azurerm_app_service_source_control" "sourcecontrol" {
   count = length(var.repository_url) > 0 ? 1 : 0
 
-  app_id = var.app_service_plan_os_type == "Linux" ? 
+  app_id = (
+    var.app_service_plan_os_type == "Linux" ? 
     azurerm_linux_web_app.linux_webapp[0].id : 
     azurerm_windows_web_app.windows_webapp[0].id
+  )
 
   repo_url               = var.repository_url
   branch                 = var.repository_branch
@@ -94,9 +96,11 @@ resource "azurerm_private_endpoint" "webapp_pe" {
 
   private_service_connection {
     name                           = "${var.web_app_name}-psc"
-    private_connection_resource_id = var.app_service_plan_os_type == "Linux" ? 
+    private_connection_resource_id = (
+      var.app_service_plan_os_type == "Linux" ? 
       azurerm_linux_web_app.linux_webapp[0].id : 
       azurerm_windows_web_app.windows_webapp[0].id
+    )
 
     subresource_names = ["sites"]
     is_manual_connection = false
@@ -111,9 +115,11 @@ resource "azurerm_role_assignment" "pe_role_assignment" {
 
   scope                = var.private_endpoint_subnet_id
 
-  principal_id = var.app_service_plan_os_type == "Linux" ? 
+  principal_id = (
+    var.app_service_plan_os_type == "Linux" ? 
     azurerm_linux_web_app.linux_webapp[0].identity[0].principal_id :
     azurerm_windows_web_app.windows_webapp[0].identity[0].principal_id
+  )
 
   role_definition_name = "Network Contributor"
 }
@@ -126,9 +132,11 @@ resource "azurerm_monitor_diagnostic_setting" "webapp_diag" {
   count = var.enable_monitoring && length(var.log_analytics_workspace_id) > 0 ? 1 : 0
 
   name                       = "${var.web_app_name}-diag"
-  target_resource_id         = var.app_service_plan_os_type == "Linux" ? 
+  target_resource_id         = (
+    var.app_service_plan_os_type == "Linux" ? 
     azurerm_linux_web_app.linux_webapp[0].id : 
     azurerm_windows_web_app.windows_webapp[0].id
+  )
 
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
