@@ -1,9 +1,9 @@
 output "web_app_default_hostname" {
-  value = var.app_service_plan_os_type == "Linux" ? azurerm_linux_web_app.linux_webapp[0].default_site_hostname : azurerm_windows_web_app.windows_webapp[0].default_site_hostname
+  value = var.app_service_plan_os_type == "Linux" ? azurerm_linux_web_app.linux_webapp[0].default_hostname : azurerm_windows_web_app.windows_webapp[0].default_hostname
 }
 
 output "app_service_plan_id" {
-  value = azurerm_app_service_plan.app_service_plan.id
+  value = azurerm_service_plan.app_service_plan.id
 }
 
 output "resource_group_name" {
