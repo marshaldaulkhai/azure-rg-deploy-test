@@ -25,7 +25,9 @@ resource "azurerm_linux_web_app" "linux_webapp" {
   service_plan_id     = azurerm_service_plan.app_service_plan.id
 
   site_config {
-    #linux_fx_version = var.web_app_runtime_stack
+    application_stack {
+      node_version = "18-lts"  # set Node.js version here instead of linux_fx_version
+    }
   }
 
   app_settings = var.app_settings
