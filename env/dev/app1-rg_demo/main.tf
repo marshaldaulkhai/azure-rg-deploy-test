@@ -26,7 +26,8 @@ resource "azurerm_linux_web_app" "linux_webapp" {
 
   site_config {
     application_stack {
-      node_version = "18-lts"  # set Node.js version here instead of linux_fx_version
+      # Use variable here, but extract the Node.js version from format like "NODE|18-lts"
+      node_version = replace(var.linux_web_app_runtime_stack, "NODE|", "")
     }
   }
 
