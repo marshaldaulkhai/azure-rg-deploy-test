@@ -83,3 +83,14 @@ variable "log_analytics_workspace_id" {
   type        = string
   default     = ""
 }
+variable "app_service_plan_sku_tier" {
+  description = "The pricing tier of the app service plan"
+  type        = string
+  default     = "Standard"  # Example default; change as needed
+}
+
+variable "app_service_plan_sku_size" {
+  description = "The SKU size of the app service plan"
+  type        = string
+  default     = "S1"        # Example default; change as needed
+}
