@@ -25,7 +25,7 @@ variable "app_service_plan_name" {
 variable "app_service_plan_os_type" {
   description = "The OS type of the App Service Plan (Linux or Windows)"
   type        = string
-  default     = "Linux"
+  default     = "Windows"
 }
 
 variable "app_service_plan_sku_name" {
