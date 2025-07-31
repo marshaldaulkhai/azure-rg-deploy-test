@@ -31,18 +31,21 @@ resource "azurerm_linux_web_app" "linux_webapp" {
   }
 
   site_config {
-    always_on = true
-    # Use the runtime-stack variable ("NODE|18-lts" format)
-    application_stack {
-      node_version = replace(var.linux_web_app_runtime_stack, "NODE|", "")
-    }
-    health_check_path        = "/api/health"
-    ftps_state               = "FtpsOnly"
-    minimum_tls_version      = "1.2"
-    worker_count             = 1
+  always_on = true
+  
+  # Health check requires both path and eviction time
+  health_check_path               = "/api/health"
+  health_check_eviction_time_in_min = 5   # or any suitable integer value like 5 or 10
 
-    # Add/override other required config here
+  ftps_state             = "FtpsOnly"
+  minimum_tls_version    = "1.2"
+  worker_count           = 1
+
+  application_stack {
+    node_version = replace(var.linux_web_app_runtime_stack, "NODE|", "")
   }
+}
+
 }
 
 # 4. Conditional: Windows Web App
