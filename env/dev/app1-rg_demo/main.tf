@@ -1,6 +1,6 @@
 # 1. Resource Group (comment this block if not required)
 resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
+  name     = local.resource_group_name
   location = var.location
   tags     = var.tags
 }
