@@ -3,6 +3,11 @@ variable "application_name" {
   description = "The logical name of the application"
   default     =  "sos-ui"
 }
+variable "product" {
+  type        = string
+  description = "The name of the product"
+  default     =  "product"
+}
 
 variable "location" {
   description = "Azure region for resources"
