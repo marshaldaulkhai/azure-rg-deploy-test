@@ -139,3 +139,25 @@ variable "main_tenant_id" {
   type        = string
   default     = "985fb370-1790-4d59-adea-4bfd1e00486d"
 }
+variable "enable_private_endpoint" {
+  description = "Create private endpoint for the Web App"
+  type        = bool
+  default     = true
+}
+
+variable "private_endpoint_subnet_id" {
+  description = "Subnet ID for Private Endpoint"
+  type        = string
+}
+
+variable "skip_dns_zone_for_pep" {
+  description = "Skip private DNS zone configuration for private endpoint"
+  type        = bool
+  default     = false
+}
+
+variable "dns_zone_ids" {
+  description = "Map of DNS zone IDs for different private endpoint subresources (e.g., 'sites')"
+  type        = map(string)
+  default     = {}
+}
