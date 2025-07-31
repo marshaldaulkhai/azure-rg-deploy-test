@@ -14,7 +14,6 @@ resource "azurerm_service_plan" "app_service_plan" {
   sku_name            = var.app_service_plan_sku_name
   tags                = var.tags
 }
-
 # 3. Conditional: Linux Web App
 resource "azurerm_linux_web_app" "linux_webapp" {
   count               = var.app_service_plan_os_type == "Linux" ? 1 : 0
@@ -31,21 +30,22 @@ resource "azurerm_linux_web_app" "linux_webapp" {
   }
 
   site_config {
-  always_on = true
-  
-  # Health check requires both path and eviction time
-  health_check_path               = "/api/health"
-  health_check_eviction_time_in_min = 5   # or any suitable integer value like 5 or 10
+    always_on                       = true
+    
+    # Health check requires both path and eviction time
+    health_check_path               = "/api/health"
+    health_check_eviction_time_in_min = 5   # or any suitable integer value
 
-  ftps_state             = "FtpsOnly"
-  minimum_tls_version    = "1.2"
-  worker_count           = 1
+    ftps_state             = "FtpsOnly"
+    minimum_tls_version    = "1.2"
+    worker_count           = 1
 
-  application_stack {
-    node_version = replace(var.linux_web_app_runtime_stack, "NODE|", "")
+    application_stack {
+      node_version = replace(var.linux_web_app_runtime_stack, "NODE|", "")
+    }
+    
+    # Add or override other site_config options as needed
   }
-}
-
 }
 
 # 4. Conditional: Windows Web App
@@ -64,19 +64,25 @@ resource "azurerm_windows_web_app" "windows_webapp" {
   }
 
   site_config {
-    always_on = true
+    always_on                       = true
+
     application_stack {
       current_stack  = "dotnet"
       dotnet_version = var.windows_web_app_dotnet_version
     }
-    health_check_path        = "/api/health"
-    ftps_state               = "FtpsOnly"
-    minimum_tls_version      = "1.2"
-    worker_count             = 1
 
-    # Add/override other required config here
+    # Health check - both arguments required
+    health_check_path               = "/api/health"
+    health_check_eviction_time_in_min = 5
+
+    ftps_state             = "FtpsOnly"
+    minimum_tls_version    = "1.2"
+    worker_count           = 1
+
+    # Add or override other site_config options as needed
   }
 }
+
 
 # 5. (Optional, but at top for priority) Private Endpoint
 resource "azurerm_private_endpoint" "webapp_pe" {
