@@ -1,180 +1,140 @@
+# 1. Resource Group (comment this block if not required)
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
   tags     = var.tags
 }
 
+# 2. App Service Plan
 resource "azurerm_service_plan" "app_service_plan" {
   name                = var.app_service_plan_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-
-  os_type  = var.app_service_plan_os_type  # "Linux" or "Windows"
-  sku_name = var.app_service_plan_sku_name  # e.g., "S1", "B1", "P1v2"
-
-  tags = var.tags
+  os_type             = var.app_service_plan_os_type
+  sku_name            = var.app_service_plan_sku_name
+  tags                = var.tags
 }
 
-# Conditional Linux Web App resource
+# 3. Conditional: Linux Web App
 resource "azurerm_linux_web_app" "linux_webapp" {
   count               = var.app_service_plan_os_type == "Linux" ? 1 : 0
-
-  name                = var.web_app_name
+  name                = local.web_app_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
+  https_only          = true
+  app_settings        = var.app_settings
+  tags                = var.tags
+
+  identity {
+    type = "SystemAssigned"
+  }
 
   site_config {
+    always_on = true
+    # Use the runtime-stack variable ("NODE|18-lts" format)
     application_stack {
-      # Use variable here, but extract the Node.js version from format like "NODE|18-lts"
       node_version = replace(var.linux_web_app_runtime_stack, "NODE|", "")
     }
-  }
+    health_check_path        = "/api/health"
+    ftps_state               = "FtpsOnly"
+    minimum_tls_version      = "1.2"
+    worker_count             = 1
 
-  app_settings = var.app_settings
-
-  https_only = true
-
-  tags = var.tags
-
-  identity {
-    type = "SystemAssigned"
+    # Add/override other required config here
   }
 }
 
-# Conditional Windows Web App resource
+# 4. Conditional: Windows Web App
 resource "azurerm_windows_web_app" "windows_webapp" {
   count               = var.app_service_plan_os_type == "Windows" ? 1 : 0
-
-  name                = var.web_app_name
+  name                = local.web_app_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
-
-  site_config {
-    application_stack {
-      current_stack = "dotnet"
-      dotnet_version = var.windows_web_app_dotnet_version
-    }
-  }
-
-  app_settings = var.app_settings
-
-  https_only = true
-
-  tags = var.tags
+  https_only          = true
+  app_settings        = var.app_settings
+  tags                = var.tags
 
   identity {
     type = "SystemAssigned"
   }
+
+  site_config {
+    always_on = true
+    application_stack {
+      current_stack  = "dotnet"
+      dotnet_version = var.windows_web_app_dotnet_version
+    }
+    health_check_path        = "/api/health"
+    ftps_state               = "FtpsOnly"
+    minimum_tls_version      = "1.2"
+    worker_count             = 1
+
+    # Add/override other required config here
+  }
 }
 
-# Source control: configure only if repo URL provided
-resource "azurerm_app_service_source_control" "sourcecontrol" {
-  count = length(var.repository_url) > 0 ? 1 : 0
-
-  app_id = (
-    var.app_service_plan_os_type == "Linux" ? 
-    azurerm_linux_web_app.linux_webapp[0].id : 
-    azurerm_windows_web_app.windows_webapp[0].id
-  )
-
-  repo_url               = var.repository_url
-  branch                 = var.repository_branch
-  use_manual_integration = true
-}
-
-#########################
-# Private Endpoint Support
-#########################
-
+# 5. (Optional, but at top for priority) Private Endpoint
 resource "azurerm_private_endpoint" "webapp_pe" {
-  count               = var.enable_private_endpoint ? 1 : 0
-
-  name                = "${var.web_app_name}-pe"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  subnet_id           = var.private_endpoint_subnet_id
+  count                 = var.enable_private_endpoint ? 1 : 0
+  name                  = "${local.web_app_name}-pe"
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
+  subnet_id             = var.private_endpoint_subnet_id
 
   private_service_connection {
-    name                           = "${var.web_app_name}-psc"
-    private_connection_resource_id = (
-      var.app_service_plan_os_type == "Linux" ? 
-      azurerm_linux_web_app.linux_webapp[0].id : 
+    name                           = "${local.web_app_name}-psc"
+    private_connection_resource_id  = (
+      var.app_service_plan_os_type == "Linux" ?
+      azurerm_linux_web_app.linux_webapp[0].id :
       azurerm_windows_web_app.windows_webapp[0].id
     )
-
-    subresource_names = ["sites"]
+    subresource_names   = ["sites"]
     is_manual_connection = false
   }
 
   tags = var.tags
 }
 
-# Role assignment for Private Endpoint to allow network management - requires identity on web apps above
+# 6. (Optional) Role Assignment for Private Endpoint
 resource "azurerm_role_assignment" "pe_role_assignment" {
-  count = var.enable_private_endpoint ? 1 : 0
-
-  scope                = var.private_endpoint_subnet_id
-
-  principal_id = (
-    var.app_service_plan_os_type == "Linux" ? 
+  count              = var.enable_private_endpoint ? 1 : 0
+  scope              = var.private_endpoint_subnet_id
+  principal_id       = (
+    var.app_service_plan_os_type == "Linux" ?
     azurerm_linux_web_app.linux_webapp[0].identity[0].principal_id :
     azurerm_windows_web_app.windows_webapp[0].identity[0].principal_id
   )
-
   role_definition_name = "Network Contributor"
 }
 
-#########################
-# Monitoring: Diagnostic Settings
-#########################
-
+# ---- THE FOLLOWING RESOURCES CAN BE COMMENTED OUT IF NOT NEEDED -------------
+# 7. (Optional) Monitoring: Diagnostic Settings
 resource "azurerm_monitor_diagnostic_setting" "webapp_diag" {
-  count = var.enable_monitoring && length(var.log_analytics_workspace_id) > 0 ? 1 : 0
-
-  name                       = "${var.web_app_name}-diag"
-  target_resource_id         = (
+  count                    = var.enable_monitoring && length(var.log_analytics_workspace_id) > 0 ? 1 : 0
+  name                     = "${local.web_app_name}-diag"
+  target_resource_id       = (
     var.app_service_plan_os_type == "Linux" ? 
     azurerm_linux_web_app.linux_webapp[0].id : 
     azurerm_windows_web_app.windows_webapp[0].id
   )
-
   log_analytics_workspace_id = var.log_analytics_workspace_id
-
-  log {
-    category = "AppServiceHTTPLogs"
-    enabled  = true
-
-    retention_policy {
-      days    = 30
-      enabled = true
-    }
-  }
-
-  log {
-    category = "AppServiceConsoleLogs"
-    enabled  = true
-
-    retention_policy {
-      days    = 30
-      enabled = true
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    enabled  = true
-
-    retention_policy {
-      days    = 30
-      enabled = true
-    }
-  }
-
-  # Ensure diagnostic setting depends on web app resource to prevent race condition
   depends_on = [
     azurerm_linux_web_app.linux_webapp,
-    azurerm_windows_web_app.windows_webapp,
+    azurerm_windows_web_app.windows_webapp
   ]
+}
+
+# 8. (Optional) Source Control Integration
+resource "azurerm_app_service_source_control" "sourcecontrol" {
+  count                  = length(var.repository_url) > 0 ? 1 : 0
+  app_id                 = (
+    var.app_service_plan_os_type == "Linux" ?
+    azurerm_linux_web_app.linux_webapp[0].id :
+    azurerm_windows_web_app.windows_webapp[0].id
+  )
+  repo_url               = var.repository_url
+  branch                 = var.repository_branch
+  use_manual_integration = true
 }
