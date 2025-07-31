@@ -6,7 +6,7 @@ variable "application_name" {
 variable "product" {
   type        = string
   description = "The name of the product"
-  default     =  "product"
+  default     =  "product1"
 }
 
 variable "location" {
