@@ -1,102 +1,120 @@
-variable "resource_group_name" {
-  description = "The name of the resource group"
+variable "application_name" {
   type        = string
-  default     = "rg-angular-webapp-demo"
+  description = "The logical name of the application"
 }
 
 variable "location" {
-  description = "The Azure location/region"
+  description = "Azure region for resources"
   type        = string
-  default     = "West Europe"
+  validation {
+    condition     = contains(["centralus", "eastus2"], var.location)
+    error_message = "Location must be: centralus or eastus2"
+  }
 }
 
-variable "web_app_name" {
-  description = "The name for the web app"
+variable "resource_group_name" {
+  description = "The resource group name"
   type        = string
-  default     = "angular-webapp-demo-12345"
 }
 
+variable "tags" {
+  description = "Resource tags"
+  type = object({
+    Environment         = string
+    Portfolio           = string
+    Application         = string
+    BillTo              = string
+    ContactEmail        = string
+    BusinessCriticality = string
+    DataClassification  = string
+  })
+}
+
+variable "environment" {
+  description = "Deployment environment"
+  type        = string
+  validation {
+    condition     = contains(["Sandbox", "Base", "Dev", "Test", "Prod"], var.environment)
+    error_message = "Environment must be one of: Sandbox, Base, Dev, Test, Prod"
+  }
+}
+
+# --- App Service Plan variables ---
 variable "app_service_plan_name" {
-  description = "The name for the App Service Plan"
+  description = "App Service Plan name"
   type        = string
-  default     = "asp-angular-demo"
+  default     = "asp-webapp"
 }
 
 variable "app_service_plan_os_type" {
-  description = "The OS type of the App Service Plan (Linux or Windows)"
+  description = "OS: Linux or Windows"
   type        = string
-  default     = "Windows"
+  default     = "Linux"
 }
 
 variable "app_service_plan_sku_name" {
-  description = "SKU name for the App Service Plan (e.g. S1, B1, P1v2)"
+  description = "SKU (e.g. B1, S1, P1v2)"
   type        = string
-  default     = "B1"   # Basic tier is often suitable for Angular apps
+  default     = "B1"
 }
 
+# --- Web App settings ---
 variable "app_settings" {
-  description = "App Settings (environment variables) for the web app"
+  description = "App environment variables"
   type        = map(string)
-  default     = {
+  default = {
     "WEBSITE_NODE_DEFAULT_VERSION" = "18"
   }
 }
 
-variable "repository_url" {
-  description = "GitHub repository URL for source control"
-  type        = string
-  default     = ""
-}
-
-variable "repository_branch" {
-  description = "Branch of the repository to deploy"
-  type        = string
-  default     = "main"
-}
-
-variable "enable_private_endpoint" {
-  description = "Create private endpoint for the Web App"
-  type        = bool
-  default     = true
-}
-
-variable "private_endpoint_subnet_id" {
-  description = "Subnet ID for the private endpoint"
-  type        = string
-  default     = ""
-}
-
-variable "tags" {
-  description = "Tags to apply to resources"
-  type        = map(string)
-  default     = {
-    "Environment" = "Dev"
-    "Project"     = "AngularApp"
-  }
-}
-
-variable "enable_monitoring" {
-  description = "Enable Azure Monitor Diagnostic Settings for web app"
-  type        = bool
-  default     = false
-}
-
-variable "log_analytics_workspace_id" {
-  description = "Resource ID of Log Analytics Workspace for diagnostics"
-  type        = string
-  default     = ""
-}
 variable "linux_web_app_runtime_stack" {
-  description = "The runtime stack for Linux web app (LinuxFxVersion)"
+  description = "Linux runtime stack (e.g. NODE|18-lts)"
   type        = string
   default     = "NODE|18-lts"
 }
 
 variable "windows_web_app_dotnet_version" {
-  description = "The dotnet version for Windows web app"
+  description = "Windows .NET version"
   type        = string
-  default     = "v8.0"  # Acceptable values: v2.0 to v8.0
+  default     = "v8.0"
 }
+
+# --- Private Endpoint ---
+variable "enable_private_endpoint" {
+  description = "Deploy Private Endpoint for WebApp"
+  type        = bool
+  default     = true
+}
+variable "private_endpoint_subnet_id" {
+  description = "Subnet ID for Private Endpoint"
+  type        = string
+  default     = ""
+}
+
+# --- Monitoring ---
+variable "enable_monitoring" {
+  description = "Enable Azure Monitor Diagnostic Settings"
+  type        = bool
+  default     = false
+}
+variable "log_analytics_workspace_id" {
+  description = "Log Analytics Workspace ID"
+  type        = string
+  default     = ""
+}
+
+# --- Source Control (Optional) ---
+variable "repository_url" {
+  description = "Source control repository URL"
+  type        = string
+  default     = ""
+}
+variable "repository_branch" {
+  description = "Branch to deploy"
+  type        = string
+  default     = "main"
+}
+
 
 variable "main_client_id" {
   description = "The client ID for the main Azure Service Principal"
