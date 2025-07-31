@@ -1,6 +1,7 @@
 variable "application_name" {
   type        = string
   description = "The logical name of the application"
+  default     =  "sos-ui"
 }
 
 variable "location" {
