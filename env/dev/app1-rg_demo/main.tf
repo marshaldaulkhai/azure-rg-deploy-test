@@ -124,6 +124,13 @@ resource "azurerm_monitor_diagnostic_setting" "webapp_diag" {
     azurerm_linux_web_app.linux_webapp,
     azurerm_windows_web_app.windows_webapp
   ]
+  enabled_log {
+    category = "AuditEvent"
+  }
+
+  enabled_metric {
+    category = "AllMetrics"
+  }
 }
 
 # 8. (Optional) Source Control Integration
