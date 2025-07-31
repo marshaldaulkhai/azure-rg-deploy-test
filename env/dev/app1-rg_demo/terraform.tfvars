@@ -1,4 +1,4 @@
-location            = "EastUS2"
+location            = "eastus2"
 resource_group_name = "TestRG"
 environment          = "Dev"
 tags              ={
