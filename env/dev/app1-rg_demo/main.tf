@@ -86,25 +86,38 @@ resource "azurerm_windows_web_app" "windows_webapp" {
 
 # 5. (Optional, but at top for priority) Private Endpoint
 resource "azurerm_private_endpoint" "webapp_pe" {
-  count                 = var.enable_private_endpoint ? 1 : 0
-  name                  = "${local.web_app_name}-pe"
-  location              = azurerm_resource_group.rg.location
-  resource_group_name   = azurerm_resource_group.rg.name
-  subnet_id             = var.private_endpoint_subnet_id
+  count               = var.enable_private_endpoint ? 1 : 0
+
+  # Using web app name-based naming (replace local.web_app_name with var or resource name as needed)
+  name                = "${local.web_app_name}-private-endpoint"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoint_subnet_id
 
   private_service_connection {
-    name                           = "${local.web_app_name}-psc"
-    private_connection_resource_id  = (
-      var.app_service_plan_os_type == "Linux" ?
+    name                           = "${local.web_app_name}-prv-svc-connection"
+    private_connection_resource_id = var.app_service_plan_os_type == "Linux" ?
       azurerm_linux_web_app.linux_webapp[0].id :
       azurerm_windows_web_app.windows_webapp[0].id
-    )
-    subresource_names   = ["sites"]
-    is_manual_connection = false
+    subresource_names             = ["sites"]
+    is_manual_connection          = false
+  }
+
+  dynamic "private_dns_zone_group" {
+    for_each = var.skip_dns_zone_for_pep ? [] : [1]
+    content {
+      name                = "${local.web_app_name}-dns-group"
+      private_dns_zone_ids = var.dns_zone_ids["sites"] != null ? [var.dns_zone_ids["sites"]] : []
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [private_dns_zone_group]
   }
 
   tags = var.tags
 }
+
 
 # 6. (Optional) Role Assignment for Private Endpoint
 resource "azurerm_role_assignment" "pe_role_assignment" {
