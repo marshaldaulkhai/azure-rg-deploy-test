@@ -13,6 +13,7 @@ locals {
     base    = "base"
   }
   short_location = local.locations[var.location]
+  resource_group_name = "rg-${lower(var.product)}-${lower(var.application_name)}-${local.web_app_env[local.env]}"
   web_app_name   = "dte-app-${local.short_location}-${local.web_app_env[local.env]}-${lower(var.application_name)}"
   app_service_plan_name   = "asp-${local.short_location}-${local.web_app_env[local.env]}-${lower(var.application_name)}${lower.os}"
 }
